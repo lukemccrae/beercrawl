@@ -1,0 +1,23 @@
+{
+  "name": "beercrawl",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lukemccrae/beercrawl.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lukemccrae/beercrawl/issues"
+  },
+  "homepage": "https://github.com/lukemccrae/beercrawl#readme",
+  "dependencies": {
+    "handlebars": "^4.0.12",
+    "pug": "^2.0.3"
+  }
+}

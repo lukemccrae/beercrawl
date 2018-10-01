@@ -1,0 +1,50 @@
+#map {
+  height: 40em;
+  width: 30em;
+  display: none;
+}
+
+#directionsPanel {
+  height: 40em;
+  width: 20em;
+  display: none;
+}
+
+#load-text {
+  display: none;
+}
+
+#header {}
+
+footer {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  overflow: hidden;
+}
+
+.loader {
+  border: 16px solid #f3f3f3;
+  /* Light grey */
+  border-top: 16px solid #3498db;
+  /* Blue */
+  border-radius: 50%;
+  width: 15em;
+  height: 15em;
+  animation: spin 2s linear infinite;
+  display: none;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+}
+
+}
