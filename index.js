@@ -6,7 +6,8 @@ var howMany;
 var home;
 
 function startClick() {
-    destinations = []
+    document.getElementById('places-list').innerHTML = "";
+    destinations = [];
     waypoint = []
     loading();
     howMany = 4;
@@ -19,6 +20,9 @@ function loading() {
     document.getElementById("load-text").style.display = 'block';
     document.getElementById("directionsPanel").style.display = 'none';
     document.getElementById("map").style.display = 'none';
+    document.getElementById("go-button").style.display = 'none';
+    document.getElementById("redo-button").style.display = 'none';
+
 }
 
 function findCurrent() {
@@ -45,11 +49,29 @@ function findLocations(location) {
     });
     var request = {
         location: position,
-        radius: '4000',
+        radius: '500',
         types: ['bar']
     };
     service = new google.maps.places.PlacesService(map);
     service.nearbySearch(request, addLocation);
+}
+
+function openInMap() {
+  var directionString = 'https://www.google.com/maps/dir/?api=1&origin=' + home.lat + '+' + home.lng + '&waypoints='
+  for (var i = 0; i < destinations.length; i++) {
+    var placeName = destinations[i].name.split(' ');
+    for (var y = 0; y < placeName.length; y++) {
+      directionString += placeName[y]
+      if(y + 1 < placeName.length) {
+        directionString += '+'
+      }
+      if(y + 1 == placeName.length && i + 1 != destinations.length) {
+        directionString += '%7C'
+      }
+    }
+  }
+  directionString += '&destination=' + home.lat + '+' + home.lng
+  window.location.href = directionString;
 }
 
 function addLocation(results, status) {
@@ -66,7 +88,7 @@ function addLocation(results, status) {
             waypoint.push({
                 location: currentLatLng.lat + ',' + currentLatLng.lng
             })
-            console.log(currentLoc.name);
+            console.log(currentLoc.name.split(" "));
             howMany += -1
             searchAgain(currentLatLng)
         } else {
@@ -85,6 +107,13 @@ function searchAgain(currentLatLng) {
 }
 
 function makeList(destinations) {
+  $.get('https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=Museum%20of%20Contemporary%20Art%20Australia&inputtype=textquery&fields=photos,formatted_address,name,rating,opening_hours,geometry&key=&key=AIzaSyB6mjYhp5ca_RPpOdHu_Ul7E-YY6BYzmms')
+      .done(function(data) {
+        console.log(data);
+      })
+      .fail(function(error) {
+          console.log(error);
+      })
   var list = document.createElement('ul');
   for (var i = 0; i < destinations.length; i++) {
     var item = document.createElement('li');
@@ -100,6 +129,8 @@ function doneLoading() {
     document.getElementById('load-text').style.display = 'none'
     document.getElementById('directionsPanel').style.display = 'block'
     document.getElementById('map').style.display = 'block'
+    document.getElementById("go-button").style.display = 'block';
+    document.getElementById("redo-button").style.display = 'block';
     document.getElementById('places-list').appendChild(makeList(destinations))
 }
 
@@ -115,7 +146,6 @@ function finishedSearching(end) {
             var point = waypoint[i].location + '&7C'
             path += point
         }
-        console.log(path);
     }
     doneLoading()
     initialize()
@@ -151,27 +181,15 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
         waypoints: waypoint,
         optimizeWaypoints: true
     }, function(response, status) {
+        console.log(home);
         console.log(response);
         console.log(waypoint);
+        console.log(destinations);
         if (status === 'OK') {
             directionsDisplay.setDirections(response);
+            console.log(response);
         } else {
             window.alert('Directions request failed due to ' + status);
-        }
-    });
-}
-
-
-function calcRoute() {
-    var request = {
-        origin: start,
-        destination: start,
-        travelMode: 'BICYCLING',
-        waypoints: waypoints
-    };
-    directionsService.route(request, function(result, status) {
-        if (status == 'OK') {
-            directionsDisplay.setDirections(result);
         }
     });
 }
