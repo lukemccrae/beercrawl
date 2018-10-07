@@ -6,7 +6,7 @@ var howMany;
 var home;
 
 function startClick() {
-    document.getElementById('places-list').innerHTML = "";
+  document.getElementById('places-string').innerHTML = "";
     destinations = [];
     waypoint = []
     loading();
@@ -15,11 +15,8 @@ function startClick() {
 }
 
 function loading() {
-    document.getElementById("directionsPanel").innerHTML = "";
     document.getElementById('loader').style.display = 'block'
     document.getElementById("load-text").style.display = 'block';
-    document.getElementById("directionsPanel").style.display = 'none';
-    document.getElementById("map").style.display = 'none';
     document.getElementById("go-button").style.display = 'none';
     document.getElementById("redo-button").style.display = 'none';
 
@@ -49,7 +46,7 @@ function findLocations(location) {
     });
     var request = {
         location: position,
-        radius: '500',
+        radius: '1000',
         types: ['bar']
     };
     service = new google.maps.places.PlacesService(map);
@@ -84,11 +81,9 @@ function addLocation(results, status) {
         }
         if (alreadyAdded(currentLoc.name)) {
             destinations.push(currentLoc)
-            //string method of pushing to waypoint
             waypoint.push({
                 location: currentLatLng.lat + ',' + currentLatLng.lng
             })
-            console.log(currentLoc.name.split(" "));
             howMany += -1
             searchAgain(currentLatLng)
         } else {
@@ -124,14 +119,30 @@ function makeList(destinations) {
 }
 
 function doneLoading() {
-  console.log(destinations);
-    document.getElementById('loader').style.display = 'none'
-    document.getElementById('load-text').style.display = 'none'
-    document.getElementById('directionsPanel').style.display = 'block'
-    document.getElementById('map').style.display = 'block'
-    document.getElementById("go-button").style.display = 'block';
-    document.getElementById("redo-button").style.display = 'block';
-    document.getElementById('places-list').appendChild(makeList(destinations))
+  directionsService.route({
+      origin: home,
+      destination: home,
+      travelMode: 'WALKING',
+      waypoints: waypoint,
+      optimizeWaypoints: true
+  }, function(response, status) {
+      if (status === 'OK') {
+          var distanceInt = 0;
+          for (var i = 0; i < response.routes[0].legs.length; i++) {
+            var distanceStr = response.routes[0].legs[i].distance.text.split(' ');
+            if(distanceStr[1] === 'mi') {
+              distanceInt = distanceInt + parseFloat(distanceStr[0])
+            }
+          }
+          document.getElementById('loader').style.display = 'none'
+          document.getElementById('load-text').style.display = 'none'
+          document.getElementById("go-button").style.display = 'block';
+          document.getElementById("redo-button").style.display = 'block';
+          document.getElementById('places-string').innerHTML = detailMessage(distanceInt)
+      } else {
+          window.alert('Directions request failed due to ' + status);
+      }
+  });
 }
 
 
@@ -148,21 +159,19 @@ function finishedSearching(end) {
         }
     }
     doneLoading()
-    initialize()
 }
 
-function initialize() {
-    directionsDisplay = new google.maps.DirectionsRenderer();
-    var chicago = new google.maps.LatLng(home.lat, home.lng);
-    var mapOptions = {
-        zoom: 15,
-        center: chicago
-    }
-    map = new google.maps.Map(document.getElementById('map'), mapOptions);
-    directionsDisplay.setMap(map);
-    directionsDisplay.setPanel(document.getElementById('directionsPanel'));
-    calculateAndDisplayRoute(directionsService, directionsDisplay)
-}
+// function initialize() {
+//     directionsDisplay = new google.maps.DirectionsRenderer();
+//     var chicago = new google.maps.LatLng(home.lat, home.lng);
+//     var mapOptions = {
+//         zoom: 15,
+//         center: chicago
+//     }
+//     map = new google.maps.Map(document.getElementById('map'), mapOptions);
+//     directionsDisplay.setMap(map);
+//     directionsDisplay.setPanel(document.getElementById('directionsPanel'));
+// }
 
 var alreadyAdded = function(loc) {
     for (var i = 0; i < destinations.length; i++) {
@@ -173,23 +182,21 @@ var alreadyAdded = function(loc) {
     return true;
 }
 
+function detailMessage(distanceInt) {
+  var numberString;
+  var placeString = ""
+  for (var i = 0; i < destinations.length; i++) {
+    if(i + 1 < destinations.length) {
+      placeString += destinations[i].name
+      placeString += ', '
+    } else {
+      placeString += ' and ' + destinations[i].name
+    }
+  }
+  var result = "This crawl takes you to " + placeString + ". It is about " + distanceInt + " miles long. The directions will return you to this location"
+  return result;
+}
+
 function calculateAndDisplayRoute(directionsService, directionsDisplay) {
-    directionsService.route({
-        origin: home,
-        destination: home,
-        travelMode: 'WALKING',
-        waypoints: waypoint,
-        optimizeWaypoints: true
-    }, function(response, status) {
-        console.log(home);
-        console.log(response);
-        console.log(waypoint);
-        console.log(destinations);
-        if (status === 'OK') {
-            directionsDisplay.setDirections(response);
-            console.log(response);
-        } else {
-            window.alert('Directions request failed due to ' + status);
-        }
-    });
+
 }
