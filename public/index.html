@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Pub Crawl Generatorrr</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body onLoad="startClick()">
+  <div class="container">
+    <h1 style="color: white; font-size: 8rem; margin-top: 4em;" id="places-string" class="font-weight-bold"></h1>
+    <p id="loading" style="color: white; font-size: 8rem;" class="saving">Loading<span>.</span><span>.</span><span>.</span></p>
+
+
+    <div class="text-center">
+
+
+      <div class="btn-toolbar">
+        <a id="go-button" style="display: none;" type="button" class="btn btn-primary btn-lg text-uppercase" onclick="openInMap()">GO</a>
+        <a id="redo-button" style="display: none;" type="button" class="btn btn-primary btn-lg text-uppercase" href="startClick()">REDO</a>
+      </div>
+    </div>
+
+    <div id="row" class="row">
+      <div style="display: none;" id="map" class="col-xs-6">
+        <footer>
+          <div id="footer" class="container">
+            <p>Check out the code on GitHub <a href="https://github.com/lukemccrae/bikepathmevanillajs">here!</a></p>
+          </div>
+        </footer>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/5.5.3/firebase.js"></script>
+  <script>
+    // Initialize Firebase
+    var config = {
+      apiKey: "AIzaSyC4GvU8yxyH-WyUMEwoLIdDb6Qqolyw23w",
+      authDomain: "mapmybeercrawl.firebaseapp.com",
+      databaseURL: "https://mapmybeercrawl.firebaseio.com",
+      projectId: "mapmybeercrawl",
+      storageBucket: "mapmybeercrawl.appspot.com",
+      messagingSenderId: "946516612544"
+    };
+    firebase.initializeApp(config);
+  </script>
+
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDDwTiUe1TKZmQtTVZ1cH1mMjqqrksMhuY&libraries=places"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="index.js"></script>
+</body>
+
+</html>

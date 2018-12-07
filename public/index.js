@@ -15,16 +15,14 @@ function startClick() {
 }
 
 function loading() {
-    document.getElementById('loader').style.display = 'block'
-    document.getElementById("load-text").style.display = 'block';
     document.getElementById("go-button").style.display = 'none';
     document.getElementById("redo-button").style.display = 'none';
-
+    document.getElementById("loading").style.display = 'block';
 }
 
 function findCurrent() {
     navigator.geolocation.getCurrentPosition(function(position) {
-        $.get('https://maps.googleapis.com/maps/api/geocode/json?latlng=' + position.coords.latitude + ',' + position.coords.longitude + '&key=AIzaSyB6mjYhp5ca_RPpOdHu_Ul7E-YY6BYzmms')
+        $.get('https://maps.googleapis.com/maps/api/geocode/json?latlng=' + position.coords.latitude + ',' + position.coords.longitude + '&key=AIzaSyB5vXqT1JNZUTPlICNT4srMRr6wjFftZlo')
             .done(function(data) {
             })
             .fail(function(error) {
@@ -49,26 +47,32 @@ function findLocations(location) {
         radius: '1000',
         types: ['bar']
     };
+
     service = new google.maps.places.PlacesService(map);
     service.nearbySearch(request, addLocation);
 }
 
 function openInMap() {
-  var directionString = 'https://www.google.com/maps/dir/?api=1&origin=' + home.lat + '+' + home.lng + '&waypoints='
-  for (var i = 0; i < destinations.length; i++) {
-    var placeName = destinations[i].name.split(' ');
-    for (var y = 0; y < placeName.length; y++) {
-      directionString += placeName[y]
-      if(y + 1 < placeName.length) {
-        directionString += '+'
+  var directionString = ['https://www.google.com/maps/dir/?api=1&origin=', home.lat, '%2C', home.lng, '&waypoints=']
+    for (var i = 0; i < destinations.length; i++) {
+      var placeName = destinations[i].name.split(' ');
+      if(i + 1 == destinations.length) {
+        directionString.push('&destination=')
       }
-      if(y + 1 == placeName.length && i + 1 != destinations.length) {
-        directionString += '%7C'
+      for (var y = 0; y < placeName.length; y++) {
+        directionString.push(placeName[y])
+        if(y + 1 < placeName.length) {
+          directionString.push('%20');
+        }
+        if(y + 1 == placeName.length && i + 1 != destinations.length) {
+          directionString.push('%7C');
+        }
       }
     }
-  }
-  directionString += '&destination=' + home.lat + '+' + home.lng
-  window.location.href = directionString;
+    // directionString.push('&destination=', home.lat, '%2C', home.lng);
+    directionString = directionString.join('')
+    console.log(directionString)
+    window.location.href = directionString;
 }
 
 function addLocation(results, status) {
@@ -104,7 +108,6 @@ function searchAgain(currentLatLng) {
 function makeList(destinations) {
   $.get('https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=Museum%20of%20Contemporary%20Art%20Australia&inputtype=textquery&fields=photos,formatted_address,name,rating,opening_hours,geometry&key=&key=AIzaSyB6mjYhp5ca_RPpOdHu_Ul7E-YY6BYzmms')
       .done(function(data) {
-        console.log(data);
       })
       .fail(function(error) {
           console.log(error);
@@ -134,10 +137,9 @@ function doneLoading() {
               distanceInt = distanceInt + parseFloat(distanceStr[0])
             }
           }
-          document.getElementById('loader').style.display = 'none'
-          document.getElementById('load-text').style.display = 'none'
           document.getElementById("go-button").style.display = 'block';
           document.getElementById("redo-button").style.display = 'block';
+          document.getElementById("loading").style.display = 'none';
           document.getElementById('places-string').innerHTML = detailMessage(distanceInt)
       } else {
           window.alert('Directions request failed due to ' + status);
@@ -182,6 +184,7 @@ var alreadyAdded = function(loc) {
     return true;
 }
 
+
 function detailMessage(distanceInt) {
   var numberString;
   var placeString = ""
@@ -193,7 +196,7 @@ function detailMessage(distanceInt) {
       placeString += ' and ' + destinations[i].name
     }
   }
-  var result = "This crawl takes you to " + placeString + ". It is about " + distanceInt + " miles long. The directions will return you to this location"
+  var result = "This crawl takes you to " + placeString + ". It is about " + distanceInt + " miles long. Have a good beer crawl! :)";
   return result;
 }
 
